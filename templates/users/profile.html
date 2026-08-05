@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile — LuxeShop{% endblock %}
+
+{% block content %}
+<div style="padding-top:70px">
+  <div style="background:var(--card-bg);border-bottom:1px solid var(--border);padding:0.875rem 0">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a>
+        <span class="breadcrumb-sep"><i class="fas fa-chevron-right"></i></span>
+        <span style="color:var(--primary)">Account Profile</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="container section-padding" style="padding-top:2.5rem">
+    <div style="display:grid;grid-template-columns:300px 1fr;gap:2rem;align-items:start" class="checkout-layout">
+
+      <!-- Profile Sidebar -->
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;text-align:center">
+        <div style="position:relative;width:100px;height:100px;margin:0 auto 1.25rem">
+          <img src="{{ profile.avatar_url }}" alt="{{ user.username }}"
+               style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--primary)">
+        </div>
+
+        <h2 style="font-size:1.25rem;font-weight:800;margin-bottom:0.25rem">{{ user.get_full_name|default:user.username }}</h2>
+        <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:1.5rem">@{{ user.username }} • Member since {{ user.date_joined|date:"M Y" }}</p>
+
+        <div style="display:flex;flex-direction:column;gap:0.5rem;text-align:left;border-top:1px solid var(--border);padding-top:1.25rem">
+          <a href="{% url 'profile' %}" class="filter-option active">
+            <i class="fas fa-user"></i> Profile Settings
+          </a>
+          <a href="{% url 'order_history' %}" class="filter-option">
+            <i class="fas fa-box"></i> Order History
+          </a>
+          <a href="{% url 'wishlist' %}" class="filter-option">
+            <i class="fas fa-heart"></i> My Wishlist
+          </a>
+          {% if user.is_staff %}
+          <a href="/admin/" target="_blank" class="filter-option" style="color:var(--accent)">
+            <i class="fas fa-user-shield"></i> Admin Panel
+          </a>
+          {% endif %}
+          <a href="{% url 'logout' %}" class="filter-option" style="color:var(--danger)">
+            <i class="fas fa-right-from-bracket"></i> Logout
+          </a>
+        </div>
+      </div>
+
+      <!-- Profile Edit Form -->
+      <div>
+        <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;margin-bottom:2rem">
+          <h2 style="font-size:1.25rem;font-weight:800;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.6rem">
+            <i class="fas fa-user-pen" style="color:var(--primary)"></i> Edit Personal Information
+          </h2>
+
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+              <div class="form-group">
+                <label class="form-label">First Name</label>
+                {{ form.first_name }}
+              </div>
+              <div class="form-group">
+                <label class="form-label">Last Name</label>
+                {{ form.last_name }}
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+              <div class="form-group">
+                <label class="form-label">Email Address</label>
+                {{ form.email }}
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                {{ form.phone }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Street Address</label>
+              {{ form.address }}
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
+              <div class="form-group">
+                <label class="form-label">City</label>
+                {{ form.city }}
+              </div>
+              <div class="form-group">
+                <label class="form-label">State</label>
+                {{ form.state }}
+              </div>
+              <div class="form-group">
+                <label class="form-label">Postal Code</label>
+                {{ form.postal_code }}
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg" style="margin-top:1rem">
+              <i class="fas fa-floppy-disk"></i> Save Changes
+            </button>
+          </form>
+        </div>
+
+        <!-- Recent Orders Preview -->
+        {% if orders %}
+        <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:2rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+            <h2 style="font-size:1.1rem;font-weight:700">Recent Orders</h2>
+            <a href="{% url 'order_history' %}" class="btn btn-ghost btn-sm">View All</a>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:0.75rem">
+            {% for order in orders %}
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0.875rem 1rem;background:var(--bg);border-radius:var(--radius-sm)">
+              <div>
+                <div style="font-weight:700;font-size:0.9rem">#{{ order.short_id }}</div>
+                <div style="font-size:0.75rem;color:var(--text-light)">{{ order.created_at|date:"M d, Y" }} • {{ order.items.count }} items</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:1rem">
+                <span class="order-status-badge status-{{ order.status }}">{{ order.get_status_display }}</span>
+                <span style="font-weight:700">₹{{ order.total|floatformat:0 }}</span>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

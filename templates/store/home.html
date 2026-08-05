@@ -1,0 +1,346 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}LuxeShop — Premium Online Shopping{% endblock %}
+
+{% block content %}
+
+<!-- ══════════════ HERO ══════════════════════════════════════════ -->
+<section class="hero">
+  <!-- Floating decorative icons -->
+  <div class="floating-icons">
+    <span class="floating-icon" style="top:15%;left:5%;--duration:5s;--delay:0s"><i class="fas fa-star" style="color:var(--accent-light)"></i></span>
+    <span class="floating-icon" style="top:60%;left:8%;--duration:7s;--delay:1s"><i class="fas fa-heart" style="color:#FB7185"></i></span>
+    <span class="floating-icon" style="top:25%;right:8%;--duration:6s;--delay:2s"><i class="fas fa-bolt" style="color:var(--accent-light)"></i></span>
+    <span class="floating-icon" style="top:70%;right:12%;--duration:8s;--delay:0.5s"><i class="fas fa-gem" style="color:#A78BFA"></i></span>
+  </div>
+
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="hero-badge">
+          <i class="fas fa-fire"></i>
+          <span>✨ New Arrivals Every Week</span>
+        </div>
+
+        <h1 class="hero-title">
+          Discover Your<br>
+          <span>Perfect Shopping</span><br>
+          Experience
+        </h1>
+
+        <p class="hero-subtitle">
+          Shop the latest collections with exclusive offers,<br>lightning-fast delivery, and premium quality guaranteed.
+        </p>
+
+        <div class="hero-actions">
+          <a href="{% url 'shop' %}" class="btn btn-accent btn-lg glow-on-hover">
+            <i class="fas fa-bag-shopping"></i> Shop Now
+          </a>
+          <a href="{% url 'shop' %}?sort=best_selling" class="btn btn-lg" style="background:rgba(255,255,255,0.15);color:white;border:2px solid rgba(255,255,255,0.3);backdrop-filter:blur(8px)">
+            <i class="fas fa-tag"></i> Explore Deals
+          </a>
+        </div>
+
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-number">50K+</div>
+            <div class="hero-stat-label">Happy Customers</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-number">10K+</div>
+            <div class="hero-stat-label">Products</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-number">4.9★</div>
+            <div class="hero-stat-label">Average Rating</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Illustration -->
+      <div class="hero-image">
+        <div class="hero-illustration">
+          <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80"
+               alt="Premium Shopping" style="border-radius:30px;box-shadow:0 30px 80px rgba(0,0,0,0.4)">
+
+          <!-- Floating Cards -->
+          <div class="hero-floating-card card-1">
+            <i class="fas fa-truck-fast"></i>
+            <div>
+              <div class="hero-card-label">Delivery</div>
+              <div class="hero-card-value">Free Shipping</div>
+            </div>
+          </div>
+
+          <div class="hero-floating-card card-2">
+            <i class="fas fa-shield-halved"></i>
+            <div>
+              <div class="hero-card-label">Guarantee</div>
+              <div class="hero-card-value">100% Secure</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ OFFERS MARQUEE ═══════════════════════════════ -->
+<div class="offers-bar">
+  <div class="offers-track">
+    {% for i in "12345678" %}
+    <div class="offer-item"><i class="fas fa-truck-fast"></i> Free Shipping on orders above ₹500</div>
+    <div class="offer-item"><i class="fas fa-rotate-left"></i> Easy 30-Day Returns</div>
+    <div class="offer-item"><i class="fas fa-shield-halved"></i> 100% Secure Payments</div>
+    <div class="offer-item"><i class="fas fa-tag"></i> Use Code WELCOME10 for 10% off</div>
+    <div class="offer-item"><i class="fas fa-headset"></i> 24/7 Customer Support</div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ══════════════ CATEGORIES ════════════════════════════════════ -->
+<section class="section-padding">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:3rem">
+      <p class="section-subtitle" style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--primary);margin-bottom:0.5rem">Shop by Category</p>
+      <h2 class="section-title">Browse Categories</h2>
+    </div>
+
+    <div class="categories-grid reveal">
+      {% for category in categories %}
+      <a href="{% url 'shop' %}?category={{ category.slug }}" class="category-card delay-{{ forloop.counter }}">
+        <div class="category-icon">
+          <i class="{{ category.icon }}"></i>
+        </div>
+        <div class="category-name">{{ category.name }}</div>
+      </a>
+      {% empty %}
+      <p style="text-align:center;color:var(--text-light);grid-column:1/-1">No categories yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ FEATURED PRODUCTS ════════════════════════════ -->
+{% if featured_products %}
+<section class="section-padding" style="padding-top:0">
+  <div class="container">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem">
+      <div>
+        <p style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--primary);margin-bottom:0.25rem">Curated for You</p>
+        <h2 class="section-title" style="margin-bottom:0">Featured Products</h2>
+      </div>
+      <a href="{% url 'shop' %}" class="btn btn-outline">View All <i class="fas fa-arrow-right"></i></a>
+    </div>
+
+    <div class="products-grid">
+      {% for product in featured_products %}
+      {% include 'store/partials/product_card.html' %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ══════════════ FLASH SALE ════════════════════════════════════ -->
+{% if flash_sale_products %}
+<section class="flash-sale-section">
+  <div class="container">
+    <div class="flash-sale-header">
+      <div class="flash-title">
+        <div class="flash-icon"><i class="fas fa-bolt"></i></div>
+        <div>
+          <div class="flash-label">Limited Time Only</div>
+          <h2 class="flash-heading">⚡ Flash Sale</h2>
+        </div>
+      </div>
+
+      <!-- Countdown Timer -->
+      <div class="countdown-timer" id="countdown" data-end="{{ flash_sale_end }}">
+        <div class="countdown-item">
+          <span class="countdown-number" id="cd-hours">00</span>
+          <span class="countdown-label">Hours</span>
+        </div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-item">
+          <span class="countdown-number" id="cd-mins">00</span>
+          <span class="countdown-label">Minutes</span>
+        </div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-item">
+          <span class="countdown-number" id="cd-secs">00</span>
+          <span class="countdown-label">Seconds</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="products-grid" style="position:relative;z-index:1">
+      {% for product in flash_sale_products %}
+      {% include 'store/partials/product_card.html' with dark=True %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ══════════════ TRENDING PRODUCTS ════════════════════════════ -->
+{% if trending_products %}
+<section class="section-padding">
+  <div class="container">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem">
+      <div>
+        <p style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--primary);margin-bottom:0.25rem">🔥 What's Hot</p>
+        <h2 class="section-title" style="margin-bottom:0">Trending Now</h2>
+      </div>
+      <a href="{% url 'shop' %}?sort=best_selling" class="btn btn-outline">View All <i class="fas fa-arrow-right"></i></a>
+    </div>
+
+    <div class="products-grid reveal">
+      {% for product in trending_products %}
+      {% include 'store/partials/product_card.html' %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ══════════════ WHY CHOOSE US ════════════════════════════════ -->
+<section class="section-padding" style="background:linear-gradient(135deg, #F5F3FF, #EDE9FE);padding-top:4rem;padding-bottom:4rem">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:3rem">
+      <h2 class="section-title">Why Shop with LuxeShop?</h2>
+      <p class="section-subtitle">We deliver more than just products — we deliver an experience.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem">
+      {% for feat in "1234" %}
+      {% if forloop.counter == 1 %}
+      <div class="card reveal delay-1" style="padding:2rem;text-align:center;border:none">
+        <div style="width:60px;height:60px;background:var(--gradient);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.5rem;color:white;box-shadow:var(--shadow-purple)"><i class="fas fa-truck-fast"></i></div>
+        <h3 style="font-size:1rem;margin-bottom:0.5rem">Free Delivery</h3>
+        <p style="font-size:0.875rem;color:var(--text-light)">On all orders above ₹500. Same-day delivery available.</p>
+      </div>
+      {% elif forloop.counter == 2 %}
+      <div class="card reveal delay-2" style="padding:2rem;text-align:center;border:none">
+        <div style="width:60px;height:60px;background:var(--gradient-accent);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.5rem;color:white;box-shadow:0 4px 16px rgba(245,158,11,0.4)"><i class="fas fa-shield-halved"></i></div>
+        <h3 style="font-size:1rem;margin-bottom:0.5rem">Secure Shopping</h3>
+        <p style="font-size:0.875rem;color:var(--text-light)">Bank-level encryption. Your payments are 100% secure.</p>
+      </div>
+      {% elif forloop.counter == 3 %}
+      <div class="card reveal delay-3" style="padding:2rem;text-align:center;border:none">
+        <div style="width:60px;height:60px;background:linear-gradient(135deg,#10B981,#059669);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.5rem;color:white;box-shadow:0 4px 16px rgba(16,185,129,0.4)"><i class="fas fa-rotate-left"></i></div>
+        <h3 style="font-size:1rem;margin-bottom:0.5rem">Easy Returns</h3>
+        <p style="font-size:0.875rem;color:var(--text-light)">30-day hassle-free return policy. No questions asked.</p>
+      </div>
+      {% else %}
+      <div class="card reveal delay-4" style="padding:2rem;text-align:center;border:none">
+        <div style="width:60px;height:60px;background:linear-gradient(135deg,#3B82F6,#1D4ED8);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.5rem;color:white;box-shadow:0 4px 16px rgba(59,130,246,0.4)"><i class="fas fa-headset"></i></div>
+        <h3 style="font-size:1rem;margin-bottom:0.5rem">24/7 Support</h3>
+        <p style="font-size:0.875rem;color:var(--text-light)">Our experts are always here to help you.</p>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ TESTIMONIALS ══════════════════════════════════ -->
+<section class="section-padding">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:3rem">
+      <p style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--primary);margin-bottom:0.25rem">Customer Reviews</p>
+      <h2 class="section-title">What Our Customers Say</h2>
+    </div>
+
+    <div class="testimonials-grid reveal">
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"LuxeShop has completely changed how I shop online. The quality is outstanding and delivery was lightning fast. Highly recommend!"</p>
+        <div class="testimonial-author">
+          <img src="https://ui-avatars.com/api/?name=Priya+Sharma&background=5B21B6&color=fff&size=50" alt="Priya" class="author-avatar">
+          <div>
+            <div class="author-name">Priya Sharma</div>
+            <div class="author-role">Fashion Enthusiast • Mumbai</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"Got my iPhone in 2 days! The packaging was premium and the product is 100% authentic. Customer support was incredibly helpful."</p>
+        <div class="testimonial-author">
+          <img src="https://ui-avatars.com/api/?name=Rahul+Verma&background=7C3AED&color=fff&size=50" alt="Rahul" class="author-avatar">
+          <div>
+            <div class="author-name">Rahul Verma</div>
+            <div class="author-role">Tech Lover • Bengaluru</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"The flash sale saved me ₹5,000 on my order! Amazing deals and the checkout experience is super smooth. Will definitely shop again."</p>
+        <div class="testimonial-author">
+          <img src="https://ui-avatars.com/api/?name=Ananya+Singh&background=F59E0B&color=fff&size=50" alt="Ananya" class="author-avatar">
+          <div>
+            <div class="author-name">Ananya Singh</div>
+            <div class="author-role">Lifestyle Blogger • Delhi</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ NEWSLETTER ════════════════════════════════════ -->
+<section style="padding:5rem 0">
+  <div class="container">
+    <div class="newsletter-section reveal">
+      <div style="position:relative;z-index:1">
+        <div style="font-size:2.5rem;margin-bottom:1rem">💌</div>
+        <h2>Stay in the Loop</h2>
+        <p>Get exclusive deals, new arrivals, and style inspiration delivered to your inbox weekly.</p>
+        <form class="newsletter-form" onsubmit="subscribeNewsletter(event)" id="newsletterForm">
+          <input type="email" class="newsletter-input" placeholder="Enter your email address" required>
+          <button type="submit" class="btn btn-accent">Subscribe <i class="fas fa-paper-plane"></i></button>
+        </form>
+        <p style="color:rgba(255,255,255,0.5);font-size:0.8rem;margin-top:1rem">No spam, ever. Unsubscribe anytime.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Flash Sale Countdown Timer
+(function() {
+  const el = document.getElementById('countdown');
+  if (!el) return;
+  const endTime = parseInt(el.dataset.end) * 1000;
+
+  function tick() {
+    const now = Date.now();
+    const remaining = endTime - now;
+
+    if (remaining <= 0) {
+      el.innerHTML = '<span style="color:rgba(255,255,255,0.5)">Sale ended</span>';
+      return;
+    }
+
+    const h = Math.floor(remaining / 3600000);
+    const m = Math.floor((remaining % 3600000) / 60000);
+    const s = Math.floor((remaining % 60000) / 1000);
+
+    const fmt = n => String(n).padStart(2, '0');
+    document.getElementById('cd-hours').textContent = fmt(h);
+    document.getElementById('cd-mins').textContent = fmt(m);
+    document.getElementById('cd-secs').textContent = fmt(s);
+  }
+
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
+{% endblock %}

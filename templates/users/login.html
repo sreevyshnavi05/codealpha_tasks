@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login — LuxeShop{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card reveal">
+    <div class="auth-logo">
+      <div class="logo-icon"><i class="fas fa-bag-shopping"></i></div>
+    </div>
+
+    <h2 class="auth-title">Welcome Back</h2>
+    <p class="auth-subtitle">Sign in to access your account, orders, and wishlist</p>
+
+    <form method="post">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+      <div style="background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.4);color:#FCA5A5;padding:0.75rem 1rem;border-radius:var(--radius-sm);margin-bottom:1.5rem;font-size:0.875rem">
+        {{ form.non_field_errors.0 }}
+      </div>
+      {% endif %}
+
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        {{ form.username }}
+      </div>
+
+      <div class="form-group">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+          <label class="form-label" style="margin-bottom:0">Password</label>
+        </div>
+        {{ form.password }}
+      </div>
+
+      <button type="submit" class="btn btn-accent btn-lg" style="width:100%;justify-content:center;margin-top:1rem">
+        <i class="fas fa-right-to-bracket"></i> Login to Account
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      Don't have an account? <a href="{% url 'register' %}" class="auth-link">Create Account</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

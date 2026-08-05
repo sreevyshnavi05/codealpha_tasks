@@ -1,0 +1,304 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{% block meta_description %}LuxeShop — Premium Online Shopping. Discover electronics, fashion, shoes, watches and more with exclusive deals and fast delivery.{% endblock %}">
+  <meta name="keywords" content="online shopping, electronics, fashion, shoes, watches, luxury, deals">
+  <meta property="og:title" content="{% block og_title %}LuxeShop — Premium Shopping{% endblock %}">
+  <meta property="og:type" content="website">
+
+  <title>{% block title %}LuxeShop — Premium Online Shopping{% endblock %}</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  <link rel="stylesheet" href="{% static 'css/animations.css' %}">
+  <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+
+  <!-- Dark mode (runs before render) -->
+  <script src="{% static 'js/darkmode.js' %}"></script>
+
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="page-animate">
+
+<!-- ═══════════════════════ NAVBAR ═══════════════════════════════ -->
+<nav class="navbar" id="navbar">
+  <div class="container">
+    <div class="navbar-inner">
+
+      <!-- Logo -->
+      <a href="{% url 'home' %}" class="navbar-logo">
+        <div class="logo-icon"><i class="fas fa-bag-shopping"></i></div>
+        <span class="logo-text">LuxeShop</span>
+      </a>
+
+      <!-- Desktop Nav -->
+      <ul class="navbar-nav">
+        <li><a href="{% url 'home' %}" class="nav-link">Home</a></li>
+        <li><a href="{% url 'shop' %}" class="nav-link">Shop</a></li>
+        <li class="dropdown">
+          <a href="{% url 'shop' %}" class="nav-link">Categories <i class="fas fa-chevron-down" style="font-size:0.7rem;margin-left:0.2rem"></i></a>
+          <div class="dropdown-menu">
+            {% for cat in all_categories %}
+            <a href="{% url 'shop' %}?category={{ cat.slug }}" class="dropdown-item">
+              <i class="{{ cat.icon }}" style="width:20px;color:var(--primary)"></i> {{ cat.name }}
+            </a>
+            {% empty %}
+            <a href="{% url 'shop' %}" class="dropdown-item">All Products</a>
+            {% endfor %}
+          </div>
+        </li>
+        <li><a href="{% url 'shop' %}?sort=best_selling" class="nav-link">Offers</a></li>
+        <li><a href="{% url 'about' %}" class="nav-link">About</a></li>
+        <li><a href="{% url 'contact' %}" class="nav-link">Contact</a></li>
+      </ul>
+
+      <!-- Actions -->
+      <div class="navbar-actions">
+        <!-- Search -->
+        <button class="nav-icon-btn" id="searchBtn" title="Search" aria-label="Search">
+          <i class="fas fa-search"></i>
+        </button>
+
+        <!-- Dark Mode -->
+        <button class="nav-icon-btn theme-toggle" id="themeToggle" title="Toggle Dark Mode" aria-label="Toggle dark mode">
+          <i class="fas fa-moon"></i>
+        </button>
+
+        <!-- Wishlist -->
+        <a href="{% url 'wishlist' %}" class="nav-icon-btn" title="Wishlist" aria-label="Wishlist">
+          <i class="far fa-heart"></i>
+          {% if wishlist_count %}
+          <span class="badge wishlist-badge">{{ wishlist_count }}</span>
+          {% endif %}
+        </a>
+
+        <!-- Cart -->
+        <button class="nav-icon-btn" data-open-cart id="cartToggleBtn" title="Shopping Cart" aria-label="Shopping Cart">
+          <i class="fas fa-bag-shopping"></i>
+          <span class="badge cart-badge" {% if not cart_count %}style="display:none"{% endif %}>{{ cart_count|default:0 }}</span>
+        </button>
+
+        <!-- Auth -->
+        {% if user.is_authenticated %}
+        <div class="dropdown" style="position:relative">
+          <a href="{% url 'profile' %}" class="btn btn-login">
+            <i class="fas fa-user"></i>
+            <span>{{ user.first_name|default:user.username }}</span>
+          </a>
+        </div>
+        {% else %}
+        <a href="{% url 'login' %}" class="btn btn-login">
+          <i class="fas fa-right-to-bracket"></i>
+          <span>Login</span>
+        </a>
+        {% endif %}
+
+        <!-- Hamburger -->
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="{% url 'home' %}" class="nav-link">🏠 Home</a></li>
+    <li><a href="{% url 'shop' %}" class="nav-link">🛍️ Shop</a></li>
+    <li style="border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:0.5rem 0;padding:0.5rem 0">
+      <div style="font-size:0.75rem;font-weight:700;color:var(--primary);padding:0.25rem 1rem;text-transform:uppercase;letter-spacing:1px">Categories</div>
+      {% for cat in all_categories %}
+      <a href="{% url 'shop' %}?category={{ cat.slug }}" class="nav-link" style="padding-left:1.5rem;font-size:0.9rem">
+        <i class="{{ cat.icon }}" style="width:20px;color:var(--primary)"></i> {{ cat.name }}
+      </a>
+      {% endfor %}
+    </li>
+    <li><a href="{% url 'shop' %}?sort=best_selling" class="nav-link">🔥 Offers</a></li>
+    <li><a href="{% url 'about' %}" class="nav-link">ℹ️ About</a></li>
+    <li><a href="{% url 'contact' %}" class="nav-link">📞 Contact</a></li>
+    {% if user.is_authenticated %}
+    <li><a href="{% url 'profile' %}" class="nav-link">👤 Profile</a></li>
+    <li><a href="{% url 'logout' %}" class="nav-link">🚪 Logout</a></li>
+    {% else %}
+    <li><a href="{% url 'login' %}" class="nav-link">🔐 Login</a></li>
+    <li><a href="{% url 'register' %}" class="nav-link">📝 Register</a></li>
+    {% endif %}
+  </ul>
+</div>
+
+<!-- ═══════════════════════ SEARCH OVERLAY ══════════════════════ -->
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-box">
+    <form action="{% url 'search' %}" method="get">
+      <div class="search-input-wrap">
+        <i class="fas fa-search" style="color:var(--text-light)"></i>
+        <input type="text" name="q" id="searchInput" placeholder="Search products, brands, categories..." autocomplete="off">
+        <button type="submit" class="btn btn-primary btn-sm">Search</button>
+      </div>
+    </form>
+    <div style="margin-top:1rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
+      <span style="font-size:0.8rem;color:var(--text-light)">Quick:</span>
+      {% for cat in all_categories|slice:":5" %}
+      <a href="{% url 'shop' %}?category={{ cat.slug }}" style="font-size:0.8rem;color:var(--primary);padding:0.2rem 0.6rem;background:rgba(91,33,182,0.08);border-radius:100px;">{{ cat.name }}</a>
+      {% endfor %}
+    </div>
+    <button id="closeSearch" style="position:absolute;top:1rem;right:1rem;background:none;color:var(--text-light);font-size:1.2rem;cursor:pointer;"><i class="fas fa-times"></i></button>
+  </div>
+</div>
+
+<!-- ═══════════════════════ DJANGO MESSAGES ══════════════════════ -->
+{% if messages %}
+<div class="django-messages">
+  {% for message in messages %}
+  <div class="django-message {{ message.tags }}">
+    {% if 'success' in message.tags %}<i class="fas fa-circle-check" style="color:var(--success)"></i>
+    {% elif 'error' in message.tags or 'danger' in message.tags %}<i class="fas fa-circle-xmark" style="color:var(--danger)"></i>
+    {% elif 'warning' in message.tags %}<i class="fas fa-triangle-exclamation" style="color:var(--warning)"></i>
+    {% else %}<i class="fas fa-circle-info" style="color:var(--info)"></i>
+    {% endif %}
+    {{ message }}
+    <button class="message-close"><i class="fas fa-times"></i></button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- ═══════════════════════ SIDE CART ════════════════════════════ -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<aside class="side-cart" id="sideCart">
+  <div class="cart-header">
+    <h3><i class="fas fa-bag-shopping" style="color:var(--primary);margin-right:0.5rem"></i>My Cart <span style="font-size:0.85rem;color:var(--text-light);font-weight:400">({{ cart_count|default:0 }} items)</span></h3>
+    <button class="cart-close-btn" id="closeCart" aria-label="Close cart"><i class="fas fa-times"></i></button>
+  </div>
+
+  <div class="cart-items" id="sideCartItems">
+    {% if request.user.is_authenticated %}
+      {% with cart_items=request.user|default:'' %}
+      <div style="padding:2rem;text-align:center;color:var(--text-light)">
+        <i class="fas fa-bag-shopping" style="font-size:3rem;color:var(--border);display:block;margin-bottom:1rem"></i>
+        <p>View your cart to see items</p>
+        <a href="{% url 'cart' %}" class="btn btn-primary btn-sm" style="margin-top:1rem">View Cart</a>
+      </div>
+      {% endwith %}
+    {% else %}
+      <div style="padding:2rem;text-align:center;color:var(--text-light)">
+        <i class="fas fa-bag-shopping" style="font-size:3rem;color:var(--border);display:block;margin-bottom:1rem"></i>
+        <p style="margin-bottom:1rem">Login to view your cart</p>
+        <a href="{% url 'login' %}" class="btn btn-primary btn-sm">Login</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="cart-footer">
+    <a href="{% url 'cart' %}" class="btn btn-primary w-full" style="width:100%;justify-content:center">
+      <i class="fas fa-bag-shopping"></i> View Full Cart
+    </a>
+  </div>
+</aside>
+
+<!-- ═══════════════════════ MAIN CONTENT ════════════════════════ -->
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<!-- ═══════════════════════ FOOTER ══════════════════════════════ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="{% url 'home' %}" class="navbar-logo">
+          <div class="logo-icon"><i class="fas fa-bag-shopping"></i></div>
+          <span class="logo-text">LuxeShop</span>
+        </a>
+        <p>Your premium destination for luxury shopping. Discover exclusive collections with fast delivery and exceptional service.</p>
+        <div class="social-links">
+          <a href="#" class="social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="social-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="social-link" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+
+      <div>
+        <h4>Quick Links</h4>
+        <ul class="footer-links">
+          <li><a href="{% url 'home' %}">Home</a></li>
+          <li><a href="{% url 'shop' %}">Shop</a></li>
+          <li><a href="{% url 'about' %}">About Us</a></li>
+          <li><a href="{% url 'contact' %}">Contact</a></li>
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'order_history' %}">My Orders</a></li>
+          <li><a href="{% url 'wishlist' %}">Wishlist</a></li>
+          {% endif %}
+        </ul>
+      </div>
+
+      <div>
+        <h4>Categories</h4>
+        <ul class="footer-links">
+          {% for cat in all_categories %}
+          <li><a href="{% url 'shop' %}?category={{ cat.slug }}">{{ cat.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div>
+        <h4>Contact</h4>
+        <ul class="footer-links">
+          <li><i class="fas fa-map-marker-alt" style="color:var(--accent);margin-right:0.4rem"></i>123 Luxury Street, Mumbai</li>
+          <li><i class="fas fa-phone" style="color:var(--accent);margin-right:0.4rem"></i>+91 98765 43210</li>
+          <li><i class="fas fa-envelope" style="color:var(--accent);margin-right:0.4rem"></i>hello@luxeshop.in</li>
+          <li><i class="fas fa-clock" style="color:var(--accent);margin-right:0.4rem"></i>Mon–Sat 9am–6pm</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Newsletter -->
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);padding:2rem;margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem">
+      <div>
+        <h4 style="color:white;margin-bottom:0.25rem">Subscribe to Newsletter</h4>
+        <p style="font-size:0.85rem">Get exclusive deals and new arrivals straight to your inbox.</p>
+      </div>
+      <form onsubmit="subscribeNewsletter(event)" style="display:flex;gap:0.75rem">
+        <input type="email" placeholder="Your email address" style="padding:0.75rem 1.25rem;border-radius:var(--radius-full);border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:white;font-family:inherit;font-size:0.875rem;min-width:250px;outline:none" required>
+        <button type="submit" class="btn btn-accent btn-sm">Subscribe</button>
+      </form>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2024 LuxeShop. All rights reserved. Made with ❤️ in India.</p>
+      <div style="display:flex;gap:1.5rem">
+        <a href="#" style="color:rgba(255,255,255,0.5);font-size:0.8rem;transition:color 0.2s" onmouseover="this.style.color='#F59E0B'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Privacy Policy</a>
+        <a href="#" style="color:rgba(255,255,255,0.5);font-size:0.8rem;transition:color 0.2s" onmouseover="this.style.color='#F59E0B'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Terms of Service</a>
+        <a href="#" style="color:rgba(255,255,255,0.5);font-size:0.8rem;transition:color 0.2s" onmouseover="this.style.color='#F59E0B'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Returns Policy</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Back to Top -->
+<button class="back-to-top" id="backToTop" aria-label="Back to top">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+<!-- CSRF for AJAX -->
+{% csrf_token %}
+
+<!-- JS -->
+<script src="{% static 'js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

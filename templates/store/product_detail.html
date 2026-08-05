@@ -1,0 +1,292 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} — LuxeShop{% endblock %}
+{% block meta_description %}{{ product.description|truncatewords:20 }}{% endblock %}
+
+{% block content %}
+<div style="padding-top:70px">
+  <!-- Breadcrumb -->
+  <div style="background:var(--card-bg);border-bottom:1px solid var(--border);padding:0.875rem 0">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a>
+        <span class="breadcrumb-sep"><i class="fas fa-chevron-right"></i></span>
+        <a href="{% url 'shop' %}">Shop</a>
+        <span class="breadcrumb-sep"><i class="fas fa-chevron-right"></i></span>
+        <a href="{% url 'shop' %}?category={{ product.category.slug }}">{{ product.category.name }}</a>
+        <span class="breadcrumb-sep"><i class="fas fa-chevron-right"></i></span>
+        <span style="color:var(--primary)">{{ product.name|truncatewords:5 }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="container section-padding" style="padding-top:3rem">
+    <!-- Product Detail Layout -->
+    <div class="product-detail-layout">
+
+      <!-- Gallery -->
+      <div>
+        <div class="gallery-main">
+          <img id="galleryMain"
+               src="{{ product.image }}"
+               alt="{{ product.name }}"
+               onerror="this.src='https://images.unsplash.com/photo-1560393464-5c69a73c5770?w=600&q=80'">
+        </div>
+
+        {% if images %}
+        <div class="gallery-thumbnails">
+          <div class="gallery-thumb active" onclick="switchGalleryImage('{{ product.image }}', this)">
+            <img src="{{ product.image }}" alt="{{ product.name }}"
+                 onerror="this.src='https://images.unsplash.com/photo-1560393464-5c69a73c5770?w=200&q=60'">
+          </div>
+          {% for img in images|slice:":4" %}
+          <div class="gallery-thumb" onclick="switchGalleryImage('{{ img.image }}', this)">
+            <img src="{{ img.image }}" alt="{{ img.alt_text|default:product.name }}"
+                 onerror="this.src='https://images.unsplash.com/photo-1560393464-5c69a73c5770?w=200&q=60'">
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Product Info -->
+      <div>
+        <!-- Category & Brand -->
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem">
+          <a href="{% url 'shop' %}?category={{ product.category.slug }}" style="font-size:0.8rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:0.5px">{{ product.category.name }}</a>
+          {% if product.brand %}
+          <span style="font-size:0.8rem;color:var(--text-light)">by {{ product.brand }}</span>
+          {% endif %}
+        </div>
+
+        <h1 class="product-title">{{ product.name }}</h1>
+
+        <!-- Rating -->
+        <div class="product-rating" style="margin-bottom:1.25rem">
+          <div class="stars" style="font-size:1rem">
+            {% with avg=avg_rating|floatformat:0 %}
+            {% for i in star_range %}{% if i <= avg %}★{% else %}☆{% endif %}{% endfor %}
+            {% endwith %}
+          </div>
+          <span style="font-weight:600;color:var(--text-dark)">{{ avg_rating|floatformat:1 }}</span>
+          <span class="rating-count">({{ reviews.count }} review{{ reviews.count|pluralize }})</span>
+        </div>
+
+        <!-- Pricing -->
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap">
+          <span class="detail-price">₹{{ product.final_price|floatformat:0 }}</span>
+          {% if product.discount_price %}
+          <span style="font-size:1.1rem;color:var(--text-light);text-decoration:line-through">₹{{ product.price|floatformat:0 }}</span>
+          <span style="background:var(--gradient-accent);color:white;font-size:0.8rem;font-weight:700;padding:0.3rem 0.75rem;border-radius:100px">{{ product.discount_percent }}% OFF</span>
+          {% endif %}
+        </div>
+
+        <!-- Stock -->
+        <div style="margin-bottom:1.5rem">
+          {% if product.in_stock %}
+          <span class="stock-badge in-stock" style="font-size:0.85rem;padding:0.4rem 1rem">
+            <i class="fas fa-circle-check"></i> In Stock ({{ product.stock }} available)
+          </span>
+          {% else %}
+          <span class="stock-badge out-stock" style="font-size:0.85rem;padding:0.4rem 1rem">
+            <i class="fas fa-circle-xmark"></i> Out of Stock
+          </span>
+          {% endif %}
+        </div>
+
+        <!-- Short Description -->
+        <p style="color:var(--text-medium);line-height:1.7;margin-bottom:1.5rem;font-size:0.95rem">{{ product.description|truncatewords:30 }}</p>
+
+        <div class="divider"></div>
+
+        <!-- Quantity & Actions -->
+        {% if product.in_stock %}
+        <form method="post" action="{% url 'add_to_cart' product.id %}" id="addCartForm">
+          {% csrf_token %}
+          <div class="qty-selector">
+            <label style="font-size:0.875rem;font-weight:600;color:var(--text-medium)">Quantity:</label>
+            <div class="qty-control">
+              <button type="button" onclick="changeQty(-1)">−</button>
+              <input type="number" name="quantity" id="qtyInput" value="1" min="1" max="{{ product.stock }}">
+              <button type="button" onclick="changeQty(1)">+</button>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1.25rem">
+            <button type="button" class="btn btn-primary btn-lg" style="flex:1" onclick="addToCart({{ product.id }}, parseInt(document.getElementById('qtyInput').value), this)">
+              <i class="fas fa-bag-plus"></i> Add to Cart
+            </button>
+            <button type="submit" class="btn btn-accent btn-lg" style="flex:1" name="buy_now" value="1">
+              <i class="fas fa-bolt"></i> Buy Now
+            </button>
+          </div>
+        </form>
+        {% else %}
+        <button class="btn btn-lg w-full" disabled style="background:var(--border);color:var(--text-light);cursor:not-allowed;width:100%">
+          <i class="fas fa-circle-xmark"></i> Currently Out of Stock
+        </button>
+        {% endif %}
+
+        <!-- Wishlist -->
+        <button class="btn btn-ghost btn-sm wishlist-btn" onclick="toggleWishlist({{ product.id }}, this)"
+                style="margin-top:0.75rem;{% if in_wishlist %}color:#EF4444{% endif %}">
+          <i class="{% if in_wishlist %}fas{% else %}far{% endif %} fa-heart"></i>
+          {% if in_wishlist %}In Wishlist{% else %}Add to Wishlist{% endif %}
+        </button>
+
+        <div class="divider"></div>
+
+        <!-- Trust Badges -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:0.5rem">
+          <div style="text-align:center;font-size:0.8rem;color:var(--text-light)">
+            <i class="fas fa-truck-fast" style="color:var(--primary);font-size:1.25rem;display:block;margin-bottom:0.3rem"></i>
+            Free Delivery
+          </div>
+          <div style="text-align:center;font-size:0.8rem;color:var(--text-light)">
+            <i class="fas fa-rotate-left" style="color:var(--success);font-size:1.25rem;display:block;margin-bottom:0.3rem"></i>
+            Easy Returns
+          </div>
+          <div style="text-align:center;font-size:0.8rem;color:var(--text-light)">
+            <i class="fas fa-shield-halved" style="color:var(--accent);font-size:1.25rem;display:block;margin-bottom:0.3rem"></i>
+            Secure Payment
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Product Tabs ── -->
+    <div style="margin-top:4rem">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="description" onclick="switchTab('description')">Description</button>
+        {% if product.features %}<button class="tab-btn" data-tab="features" onclick="switchTab('features')">Features</button>{% endif %}
+        {% if product.specifications %}<button class="tab-btn" data-tab="specs" onclick="switchTab('specs')">Specifications</button>{% endif %}
+        <button class="tab-btn" data-tab="reviews" onclick="switchTab('reviews')">Reviews ({{ reviews.count }})</button>
+      </div>
+
+      <div id="tab-description" class="tab-panel active" style="padding:1.5rem 0;color:var(--text-medium);line-height:1.8">
+        <p>{{ product.description }}</p>
+      </div>
+
+      {% if product.features_list %}
+      <div id="tab-features" class="tab-panel" style="padding:1.5rem 0">
+        <ul style="display:flex;flex-direction:column;gap:0.75rem">
+          {% for feature in product.features_list %}
+          <li style="display:flex;align-items:center;gap:0.75rem;color:var(--text-medium)">
+            <i class="fas fa-circle-check" style="color:var(--success)"></i> {{ feature }}
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      {% if product.specifications_list %}
+      <div id="tab-specs" class="tab-panel" style="padding:1.5rem 0">
+        <div style="display:grid;gap:0.5rem">
+          {% for spec in product.specifications_list %}
+          <div style="display:flex;gap:1rem;padding:0.75rem;background:var(--bg);border-radius:var(--radius-sm)">
+            <span style="font-weight:600;min-width:180px;color:var(--text-medium);font-size:0.875rem">{{ spec.key }}</span>
+            <span style="color:var(--text-dark);font-size:0.875rem">{{ spec.value }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <div id="tab-reviews" class="tab-panel" style="padding:1.5rem 0">
+        <!-- Average Rating Display -->
+        <div style="display:flex;align-items:center;gap:2rem;margin-bottom:2rem;padding:1.5rem;background:var(--bg);border-radius:var(--radius)">
+          <div style="text-align:center">
+            <div style="font-size:3rem;font-weight:900;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">{{ avg_rating|floatformat:1 }}</div>
+            <div style="color:var(--accent);font-size:1.25rem">★★★★★</div>
+            <div style="font-size:0.8rem;color:var(--text-light)">{{ reviews.count }} reviews</div>
+          </div>
+          <div style="flex:1">
+            {% for r in "54321" %}
+            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.4rem">
+              <span style="font-size:0.8rem;min-width:30px;color:var(--text-light)">{{ r }}★</span>
+              <div style="flex:1;height:6px;background:var(--border);border-radius:3px">
+                <div style="width:{% if r == '5' %}70{% elif r == '4' %}20{% elif r == '3' %}7{% else %}3{% endif %}%;height:100%;background:var(--accent);border-radius:3px"></div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Reviews List -->
+        {% for review in reviews %}
+        <div style="padding:1.25rem;border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:1rem;background:var(--card-bg)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">
+            <div style="display:flex;align-items:center;gap:0.75rem">
+              <img src="https://ui-avatars.com/api/?name={{ review.user.username }}&background=5B21B6&color=fff&size=40" alt="{{ review.user.username }}" style="width:40px;height:40px;border-radius:50%">
+              <div>
+                <div style="font-weight:700;font-size:0.9rem">{{ review.user.get_full_name|default:review.user.username }}</div>
+                <div style="font-size:0.75rem;color:var(--text-light)">{{ review.created_at|date:"M d, Y" }}</div>
+              </div>
+            </div>
+            <div style="color:var(--accent)">{% for i in star_range %}{% if i <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
+          </div>
+          <p style="color:var(--text-medium);font-size:0.9rem">{{ review.comment }}</p>
+        </div>
+        {% empty %}
+        <div class="empty-state" style="padding:3rem">
+          <i class="far fa-star"></i>
+          <h3>No reviews yet</h3>
+          <p>Be the first to review this product!</p>
+        </div>
+        {% endfor %}
+
+        <!-- Write Review -->
+        {% if user.is_authenticated and not user_review %}
+        <div style="margin-top:2rem;padding:1.5rem;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)">
+          <h3 style="font-size:1rem;margin-bottom:1.25rem"><i class="fas fa-pen" style="color:var(--primary);margin-right:0.5rem"></i>Write a Review</h3>
+          <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+              <label class="form-label">Rating</label>
+              {{ review_form.rating }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Your Review</label>
+              {{ review_form.comment }}
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Review</button>
+          </form>
+        </div>
+        {% elif not user.is_authenticated %}
+        <div style="text-align:center;padding:2rem;background:var(--bg);border-radius:var(--radius);margin-top:1.5rem">
+          <p style="color:var(--text-medium);margin-bottom:1rem">Login to write a review</p>
+          <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary btn-sm">Login</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Related Products -->
+    {% if related_products %}
+    <div style="margin-top:5rem">
+      <h2 class="section-title" style="margin-bottom:2rem">Related Products</h2>
+      <div class="products-grid">
+        {% for product in related_products %}
+        {% include 'store/partials/product_card.html' %}
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function changeQty(delta) {
+  const input = document.getElementById('qtyInput');
+  const max = parseInt(input.max) || 99;
+  const newVal = Math.max(1, Math.min(max, parseInt(input.value) + delta));
+  input.value = newVal;
+}
+
+// Gallery transition
+document.getElementById('galleryMain').style.transition = 'opacity 0.2s ease';
+</script>
+{% endblock %}

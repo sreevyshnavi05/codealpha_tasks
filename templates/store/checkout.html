@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout — LuxeShop{% endblock %}
+
+{% block content %}
+<div style="padding-top:70px">
+  <div style="background:var(--card-bg);border-bottom:1px solid var(--border);padding:0.875rem 0">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a>
+        <span class="breadcrumb-sep"><i class="fas fa-chevron-right"></i></span>
+        <a href="{% url 'cart' %}">Cart</a>
+        <span class="breadcrumb-sep"><i class="fas fa-chevron-right"></i></span>
+        <span style="color:var(--primary)">Checkout</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="container section-padding" style="padding-top:2.5rem">
+    <h1 style="font-size:1.75rem;font-weight:800;margin-bottom:2rem">
+      <i class="fas fa-lock" style="color:var(--primary);margin-right:0.5rem"></i>
+      Secure Checkout
+    </h1>
+
+    <form method="post" id="checkoutForm">
+      {% csrf_token %}
+      <div style="display:grid;grid-template-columns:1fr 400px;gap:2rem;align-items:start" class="checkout-layout">
+
+        <!-- Left: Shipping + Payment -->
+        <div>
+          <!-- Shipping Details -->
+          <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;margin-bottom:1.5rem">
+            <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.6rem">
+              <i class="fas fa-map-marker-alt" style="color:var(--primary)"></i> Shipping Information
+            </h2>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+              <div class="form-group">
+                <label class="form-label" for="id_full_name">Full Name *</label>
+                {{ form.full_name }}
+                {% if form.full_name.errors %}<div class="form-error">{{ form.full_name.errors.0 }}</div>{% endif %}
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="id_email">Email Address *</label>
+                {{ form.email }}
+                {% if form.email.errors %}<div class="form-error">{{ form.email.errors.0 }}</div>{% endif %}
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="id_phone">Phone Number *</label>
+                {{ form.phone }}
+                {% if form.phone.errors %}<div class="form-error">{{ form.phone.errors.0 }}</div>{% endif %}
+              </div>
+              <div class="form-group" style="grid-column:1/-1">
+                <label class="form-label" for="id_address">Street Address *</label>
+                {{ form.address }}
+                {% if form.address.errors %}<div class="form-error">{{ form.address.errors.0 }}</div>{% endif %}
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="id_city">City *</label>
+                {{ form.city }}
+                {% if form.city.errors %}<div class="form-error">{{ form.city.errors.0 }}</div>{% endif %}
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="id_state">State *</label>
+                {{ form.state }}
+                {% if form.state.errors %}<div class="form-error">{{ form.state.errors.0 }}</div>{% endif %}
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="id_postal_code">Postal Code *</label>
+                {{ form.postal_code }}
+                {% if form.postal_code.errors %}<div class="form-error">{{ form.postal_code.errors.0 }}</div>{% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Method -->
+          <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:2rem">
+            <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.6rem">
+              <i class="fas fa-credit-card" style="color:var(--primary)"></i> Payment Method
+            </h2>
+
+            <div class="payment-options">
+              <label class="payment-option">
+                <input type="radio" name="payment_method" value="cod" checked>
+                <div class="payment-icon"><i class="fas fa-money-bill-wave"></i></div>
+                <div>
+                  <div class="payment-label">Cash on Delivery</div>
+                  <div class="payment-desc">Pay when your order arrives</div>
+                </div>
+              </label>
+              <label class="payment-option">
+                <input type="radio" name="payment_method" value="card">
+                <div class="payment-icon"><i class="fas fa-credit-card"></i></div>
+                <div>
+                  <div class="payment-label">Credit / Debit Card</div>
+                  <div class="payment-desc">Visa, Mastercard, RuPay</div>
+                </div>
+              </label>
+              <label class="payment-option">
+                <input type="radio" name="payment_method" value="upi">
+                <div class="payment-icon"><i class="fas fa-mobile-screen"></i></div>
+                <div>
+                  <div class="payment-label">UPI Payment</div>
+                  <div class="payment-desc">GPay, PhonePe, Paytm, BHIM</div>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Order Summary -->
+        <div style="position:sticky;top:90px">
+          <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem">
+            <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:1.5rem">Order Summary</h2>
+
+            <!-- Items -->
+            <div style="max-height:300px;overflow-y:auto;margin-bottom:1.25rem">
+              {% for item in items %}
+              <div style="display:flex;gap:0.75rem;align-items:center;padding:0.75rem 0;border-bottom:1px solid var(--border)">
+                <img src="{{ item.product.image }}" alt="{{ item.product.name }}"
+                     style="width:56px;height:56px;border-radius:var(--radius-sm);object-fit:cover;flex-shrink:0;background:#f0ebff"
+                     onerror="this.src='https://images.unsplash.com/photo-1560393464-5c69a73c5770?w=100&q=60'">
+                <div style="flex:1">
+                  <div style="font-size:0.85rem;font-weight:600;color:var(--text-dark)">{{ item.product.name|truncatewords:5 }}</div>
+                  <div style="font-size:0.75rem;color:var(--text-light)">Qty: {{ item.quantity }}</div>
+                </div>
+                <div style="font-size:0.9rem;font-weight:700;color:var(--text-dark)">₹{{ item.total_price|floatformat:0 }}</div>
+              </div>
+              {% endfor %}
+            </div>
+
+            <!-- Pricing Breakdown -->
+            <div class="cart-summary-row"><span>Subtotal</span><span>₹{{ subtotal|floatformat:0 }}</span></div>
+            {% if discount > 0 %}
+            <div class="cart-summary-row" style="color:var(--success)"><span>Coupon Discount</span><span>−₹{{ discount|floatformat:0 }}</span></div>
+            {% endif %}
+            <div class="cart-summary-row"><span>Shipping</span><span style="color:var(--success)">{% if shipping == 0 %}Free{% else %}₹{{ shipping|floatformat:0 }}{% endif %}</span></div>
+            <div class="cart-summary-row"><span>Tax (5%)</span><span>₹{{ tax|floatformat:0 }}</span></div>
+
+            <div class="cart-total-row">
+              <span>Grand Total</span>
+              <span>₹{{ total|floatformat:0 }}</span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;font-size:1.05rem" id="placeOrderBtn">
+              <i class="fas fa-lock"></i> Place Order
+            </button>
+
+            <div style="text-align:center;margin-top:1rem;font-size:0.75rem;color:var(--text-light)">
+              <i class="fas fa-shield-halved" style="color:var(--success)"></i> Your data is encrypted and secure
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+  const btn = document.getElementById('placeOrderBtn');
+  btn.innerHTML = '<span class="spinner"></span> Placing Order...';
+  btn.disabled = true;
+});
+</script>
+{% endblock %}

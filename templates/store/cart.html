@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Cart — LuxeShop{% endblock %}
+
+{% block content %}
+<div style="padding-top:70px">
+  <div style="background:var(--card-bg);border-bottom:1px solid var(--border);padding:0.875rem 0">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a>
+        <span class="breadcrumb-sep"><i class="fas fa-chevron-right"></i></span>
+        <span style="color:var(--primary)">Shopping Cart</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="container section-padding" style="padding-top:2.5rem">
+    <h1 style="font-size:1.75rem;font-weight:800;margin-bottom:2rem">
+      <i class="fas fa-bag-shopping" style="color:var(--primary);margin-right:0.5rem"></i>
+      Shopping Cart
+      <span style="font-size:1rem;font-weight:400;color:var(--text-light)">({{ items.count }} item{{ items.count|pluralize }})</span>
+    </h1>
+
+    {% if items %}
+    <div style="display:grid;grid-template-columns:1fr 380px;gap:2rem;align-items:start" class="checkout-layout">
+
+      <!-- Cart Items -->
+      <div>
+        {% for item in items %}
+        <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;display:flex;gap:1.5rem;align-items:center">
+          <a href="{% url 'product_detail' item.product.slug %}">
+            <img src="{{ item.product.image }}" alt="{{ item.product.name }}"
+                 style="width:100px;height:100px;border-radius:var(--radius-sm);object-fit:cover;flex-shrink:0;background:#f0ebff"
+                 onerror="this.src='https://images.unsplash.com/photo-1560393464-5c69a73c5770?w=200&q=60'">
+          </a>
+
+          <div style="flex:1">
+            <a href="{% url 'product_detail' item.product.slug %}">
+              <h3 style="font-size:1rem;font-weight:700;margin-bottom:0.3rem;color:var(--text-dark)">{{ item.product.name }}</h3>
+            </a>
+            <p style="font-size:0.8rem;color:var(--primary);margin-bottom:0.5rem">{{ item.product.category.name }}</p>
+            <div style="font-size:1rem;font-weight:700;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">
+              ₹{{ item.product.final_price|floatformat:0 }} each
+            </div>
+          </div>
+
+          <!-- Quantity Controls -->
+          <div style="display:flex;align-items:center;gap:1.5rem">
+            <div class="qty-controls">
+              <form method="post" action="{% url 'update_cart' item.id %}" style="display:inline">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="decrease">
+                <button type="submit" class="qty-btn">−</button>
+              </form>
+              <span class="qty-value">{{ item.quantity }}</span>
+              <form method="post" action="{% url 'update_cart' item.id %}" style="display:inline">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="increase">
+                <button type="submit" class="qty-btn">+</button>
+              </form>
+            </div>
+
+            <div style="text-align:right">
+              <div style="font-size:1.1rem;font-weight:800;color:var(--text-dark)">₹{{ item.total_price|floatformat:0 }}</div>
+              <form method="post" action="{% url 'remove_from_cart' item.id %}">
+                {% csrf_token %}
+                <button type="submit" class="cart-remove" style="font-size:0.75rem;margin-top:0.3rem;display:flex;align-items:center;gap:0.3rem">
+                  <i class="fas fa-trash-can"></i> Remove
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+
+        <a href="{% url 'shop' %}" class="btn btn-ghost" style="margin-top:0.5rem">
+          <i class="fas fa-arrow-left"></i> Continue Shopping
+        </a>
+      </div>
+
+      <!-- Order Summary -->
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem;position:sticky;top:90px">
+        <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:1.5rem">Order Summary</h2>
+
+        <!-- Coupon -->
+        <div style="margin-bottom:1.5rem">
+          <div style="font-size:0.85rem;font-weight:600;color:var(--text-medium);margin-bottom:0.6rem">Have a coupon?</div>
+          <div style="display:flex;gap:0.5rem">
+            <input type="text" id="couponInput" placeholder="Enter code (e.g. WELCOME10)"
+                   style="flex:1;padding:0.6rem 1rem;border:2px solid var(--border);border-radius:var(--radius-full);font-size:0.85rem;background:var(--card-bg);color:var(--text-dark);outline:none;font-family:inherit"
+                   onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
+            <button onclick="applyCoupon()" class="btn btn-outline btn-sm">Apply</button>
+          </div>
+          <p style="font-size:0.75rem;color:var(--text-light);margin-top:0.4rem">Try: WELCOME10, LUXE20, FLASH30</p>
+        </div>
+
+        <div class="cart-summary-row">
+          <span>Subtotal</span>
+          <span>₹{{ cart.subtotal|floatformat:0 }}</span>
+        </div>
+        <div class="cart-summary-row">
+          <span>Shipping</span>
+          <span style="color:var(--success)">{% if cart.subtotal >= 500 %}Free{% else %}₹49{% endif %}</span>
+        </div>
+        <div class="cart-summary-row">
+          <span>Tax (5%)</span>
+          <span>₹{{ cart.subtotal|floatformat:0 }}</span>
+        </div>
+
+        <div class="cart-total-row">
+          <span>Total</span>
+          <span>₹{{ cart.subtotal|floatformat:0 }}</span>
+        </div>
+
+        {% if user.is_authenticated %}
+        <a href="{% url 'checkout' %}" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;margin-top:0.5rem">
+          <i class="fas fa-lock"></i> Proceed to Checkout
+        </a>
+        {% else %}
+        <a href="{% url 'login' %}?next={% url 'checkout' %}" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;margin-top:0.5rem">
+          <i class="fas fa-right-to-bracket"></i> Login to Checkout
+        </a>
+        {% endif %}
+
+        <div style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--border);display:flex;justify-content:center;gap:1rem;flex-wrap:wrap">
+          <span style="font-size:0.75rem;color:var(--text-light);display:flex;align-items:center;gap:0.3rem"><i class="fas fa-shield-halved" style="color:var(--success)"></i> Secure Checkout</span>
+          <span style="font-size:0.75rem;color:var(--text-light);display:flex;align-items:center;gap:0.3rem"><i class="fas fa-rotate-left" style="color:var(--primary)"></i> Easy Returns</span>
+          <span style="font-size:0.75rem;color:var(--text-light);display:flex;align-items:center;gap:0.3rem"><i class="fas fa-truck-fast" style="color:var(--accent)"></i> Fast Delivery</span>
+        </div>
+      </div>
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+      <i class="fas fa-bag-shopping"></i>
+      <h3>Your cart is empty</h3>
+      <p>Looks like you haven't added anything to your cart yet.</p>
+      <a href="{% url 'shop' %}" class="btn btn-primary" style="margin-top:1.5rem">
+        <i class="fas fa-bag-shopping"></i> Start Shopping
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

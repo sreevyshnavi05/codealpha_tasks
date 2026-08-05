@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us — LuxeShop{% endblock %}
+
+{% block content %}
+<div style="padding-top:70px">
+  <!-- Hero -->
+  <section class="about-hero">
+    <div class="container">
+      <h1>Redefining Premium Shopping</h1>
+      <p>We combine cutting-edge technology with curated luxury products to deliver an unparalleled online shopping experience.</p>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <div class="container">
+    <div class="about-stats">
+      <div class="about-stat">
+        <div class="about-stat-number">50,000+</div>
+        <div class="about-stat-label">Happy Customers</div>
+      </div>
+      <div class="about-stat">
+        <div class="about-stat-number">10,000+</div>
+        <div class="about-stat-label">Products Available</div>
+      </div>
+      <div class="about-stat">
+        <div class="about-stat-number">99.8%</div>
+        <div class="about-stat-label">On-Time Delivery</div>
+      </div>
+      <div class="about-stat">
+        <div class="about-stat-number">24/7</div>
+        <div class="about-stat-label">Dedicated Support</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Story & Vision -->
+  <section class="section-padding">
+    <div class="container">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center" class="checkout-layout">
+        <div>
+          <p style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--primary);margin-bottom:0.5rem">Our Story</p>
+          <h2 class="section-title">Built for Quality & Convenience</h2>
+          <p style="color:var(--text-medium);line-height:1.8;margin-bottom:1rem">
+            Founded in 2024, LuxeShop was created with a single vision: to bring world-class luxury products and a seamless digital shopping experience to discerning customers everywhere.
+          </p>
+          <p style="color:var(--text-medium);line-height:1.8">
+            Every product in our catalog is handpicked for exceptional craftsmanship, durability, and value. From electronics to fashion, we set the highest standards.
+          </p>
+        </div>
+        <div>
+          <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&q=80" alt="About LuxeShop" style="border-radius:var(--radius);box-shadow:var(--shadow-lg);width:100%">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="section-padding" style="background:var(--card-bg);border-top:1px solid var(--border)">
+    <div class="container" style="max-width:800px">
+      <div class="text-center" style="margin-bottom:3rem">
+        <p style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--primary);margin-bottom:0.5rem">Got Questions?</p>
+        <h2 class="section-title">Frequently Asked Questions</h2>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span>What payment methods do you accept?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+          We accept Cash on Delivery (COD), Credit/Debit Cards (Visa, Mastercard, RuPay), and UPI options (Google Pay, PhonePe, Paytm).
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span>How long does shipping take?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+          Standard delivery takes 3–5 business days. Express same-day or next-day shipping is available in selected metro cities.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span>What is your return policy?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+          We offer a hassle-free 30-day return policy. If you're not completely satisfied with your purchase, return it for a full refund or exchange.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span>How do I track my order?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+          Once your order is placed, you can track its status under "My Orders" in your account profile. We also send SMS and Email tracking updates.
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

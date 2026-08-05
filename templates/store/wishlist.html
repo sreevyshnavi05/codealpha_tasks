@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Wishlist — LuxeShop{% endblock %}
+
+{% block content %}
+<div style="padding-top:70px">
+  <div style="background:var(--card-bg);border-bottom:1px solid var(--border);padding:0.875rem 0">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a>
+        <span class="breadcrumb-sep"><i class="fas fa-chevron-right"></i></span>
+        <span style="color:var(--primary)">Wishlist</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="container section-padding" style="padding-top:2.5rem">
+    <h1 style="font-size:1.75rem;font-weight:800;margin-bottom:2rem">
+      <i class="fas fa-heart" style="color:#EF4444;margin-right:0.5rem"></i> My Wishlist
+      <span style="font-size:1rem;font-weight:400;color:var(--text-light)">({{ products.count }} item{{ products.count|pluralize }})</span>
+    </h1>
+
+    {% if products %}
+    <div class="products-grid">
+      {% for product in products %}
+      {% include 'store/partials/product_card.html' %}
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <i class="far fa-heart"></i>
+      <h3>Your wishlist is empty</h3>
+      <p>Save items you love by clicking the heart icon on product cards.</p>
+      <a href="{% url 'shop' %}" class="btn btn-primary" style="margin-top:1.5rem">Explore Products</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

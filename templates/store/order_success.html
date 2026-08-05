@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order Successful! — LuxeShop{% endblock %}
+
+{% block content %}
+<div style="padding-top:70px;min-height:80vh;display:flex;align-items:center;justify-content:center;padding-bottom:4rem">
+  <div class="container" style="max-width:700px">
+    <!-- Success Card -->
+    <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:3rem;text-align:center;box-shadow:var(--shadow-lg)">
+
+      <!-- Success Animation -->
+      <div class="success-icon">
+        <i class="fas fa-check"></i>
+      </div>
+
+      <!-- Confetti dots (decorative) -->
+      <div style="position:absolute;top:0;left:0;right:0;pointer-events:none;overflow:hidden;height:200px" id="confetti"></div>
+
+      <h1 style="font-size:2rem;font-weight:900;margin-bottom:0.5rem;color:var(--success)">Order Placed! 🎉</h1>
+      <p style="color:var(--text-light);margin-bottom:2rem">Thank you, {{ order.full_name }}! Your order has been successfully placed.</p>
+
+      <!-- Order Info -->
+      <div style="background:var(--bg);border-radius:var(--radius);padding:1.5rem;margin-bottom:2rem;text-align:left">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div>
+            <div style="font-size:0.8rem;color:var(--text-light);margin-bottom:0.25rem">Order ID</div>
+            <div style="font-weight:700;color:var(--primary);font-size:1.1rem">#{{ order.short_id }}</div>
+          </div>
+          <div>
+            <div style="font-size:0.8rem;color:var(--text-light);margin-bottom:0.25rem">Estimated Delivery</div>
+            <div style="font-weight:700;color:var(--text-dark)">{{ order.estimated_delivery }}</div>
+          </div>
+          <div>
+            <div style="font-size:0.8rem;color:var(--text-light);margin-bottom:0.25rem">Payment Method</div>
+            <div style="font-weight:600">{{ order.get_payment_method_display }}</div>
+          </div>
+          <div>
+            <div style="font-size:0.8rem;color:var(--text-light);margin-bottom:0.25rem">Order Total</div>
+            <div style="font-weight:800;font-size:1.2rem;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">₹{{ order.total|floatformat:0 }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Status Timeline -->
+      <div class="order-timeline">
+        <div class="timeline-step completed">
+          <div class="timeline-icon"><i class="fas fa-check"></i></div>
+          <div class="timeline-label">Confirmed</div>
+        </div>
+        <div class="timeline-step">
+          <div class="timeline-icon"><i class="fas fa-box"></i></div>
+          <div class="timeline-label">Packed</div>
+        </div>
+        <div class="timeline-step">
+          <div class="timeline-icon"><i class="fas fa-truck"></i></div>
+          <div class="timeline-label">Shipped</div>
+        </div>
+        <div class="timeline-step">
+          <div class="timeline-icon"><i class="fas fa-home"></i></div>
+          <div class="timeline-label">Delivered</div>
+        </div>
+      </div>
+
+      <!-- Ordered Items -->
+      <div style="text-align:left;margin-top:1.5rem">
+        <h3 style="font-size:0.9rem;font-weight:700;margin-bottom:1rem;color:var(--text-medium)">ITEMS ORDERED</h3>
+        {% for item in order.items.all %}
+        <div style="display:flex;align-items:center;gap:1rem;padding:0.75rem 0;border-bottom:1px solid var(--border)">
+          <img src="{{ item.product.image }}" alt="{{ item.product.name }}"
+               style="width:56px;height:56px;border-radius:var(--radius-sm);object-fit:cover;background:#f0ebff"
+               onerror="this.src='https://images.unsplash.com/photo-1560393464-5c69a73c5770?w=100&q=60'">
+          <div style="flex:1">
+            <div style="font-weight:600;font-size:0.9rem">{{ item.product.name }}</div>
+            <div style="font-size:0.8rem;color:var(--text-light)">Qty: {{ item.quantity }} × ₹{{ item.price|floatformat:0 }}</div>
+          </div>
+          <div style="font-weight:700">₹{{ item.total_price|floatformat:0 }}</div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex;gap:1rem;justify-content:center;margin-top:2rem;flex-wrap:wrap">
+        <a href="{% url 'order_history' %}" class="btn btn-primary">
+          <i class="fas fa-list-check"></i> My Orders
+        </a>
+        <a href="{% url 'shop' %}" class="btn btn-outline">
+          <i class="fas fa-bag-shopping"></i> Continue Shopping
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Simple confetti
+(function() {
+  const container = document.getElementById('confetti');
+  const colors = ['#5B21B6','#7C3AED','#F59E0B','#10B981','#3B82F6','#EF4444'];
+  for (let i = 0; i < 40; i++) {
+    const dot = document.createElement('div');
+    const size = Math.random() * 10 + 4;
+    dot.style.cssText = `
+      position:absolute;
+      width:${size}px;height:${size}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
+      left:${Math.random()*100}%;
+      top:${Math.random()*100}%;
+      opacity:${Math.random()*0.8+0.2};
+      animation:float ${Math.random()*3+2}s ease-in-out ${Math.random()*2}s infinite alternate;
+    `;
+    container.appendChild(dot);
+  }
+})();
+</script>
+{% endblock %}
