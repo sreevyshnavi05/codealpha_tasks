@@ -1337,6 +1337,7 @@ h1, h2, h3, h4, h5, h6 {
   background: rgba(124,58,237,0.2);
   border-radius: 50%;
   filter: blur(60px);
+  pointer-events: none;
 }
 
 .auth-page::after {
@@ -1349,6 +1350,7 @@ h1, h2, h3, h4, h5, h6 {
   background: rgba(91,33,182,0.2);
   border-radius: 50%;
   filter: blur(60px);
+  pointer-events: none;
 }
 
 .auth-card {

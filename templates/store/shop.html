@@ -49,6 +49,7 @@
           <a href="?{% if category_slug %}category={{ category_slug }}&{% endif %}sort=price_high{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-option {% if sort_by == 'price_high' %}active{% endif %}"><i class="fas fa-arrow-down-9-1"></i> Price: High to Low</a>
           <a href="?{% if category_slug %}category={{ category_slug }}&{% endif %}sort=best_selling{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-option {% if sort_by == 'best_selling' %}active{% endif %}"><i class="fas fa-fire"></i> Best Selling</a>
           <a href="?{% if category_slug %}category={{ category_slug }}&{% endif %}sort=rating{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-option {% if sort_by == 'rating' %}active{% endif %}"><i class="fas fa-star"></i> Top Rated</a>
+          <a href="?{% if category_slug %}category={{ category_slug }}&{% endif %}sort=offers{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-option {% if sort_by == 'offers' %}active{% endif %}"><i class="fas fa-tag"></i> Special Offers</a>
         </div>
       </aside>
 

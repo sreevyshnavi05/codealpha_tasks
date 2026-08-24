@@ -93,6 +93,8 @@ def shop(request):
         products = products.order_by('-review_count')
     elif sort_by == 'rating':
         products = products.order_by('-rating')
+    elif sort_by == 'offers':
+        products = products.exclude(discount_price__isnull=True).order_by('-discount_price')
     else:
         products = products.order_by('-created_at')
 

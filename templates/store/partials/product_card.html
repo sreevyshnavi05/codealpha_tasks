@@ -23,7 +23,7 @@
     <!-- Quick Actions Overlay -->
     <div class="product-actions-overlay">
       <button class="overlay-btn wishlist-btn {% if request.user.is_authenticated %}{% endif %}"
-              onclick="toggleWishlist({{ product.id }}, this)"
+              onclick="toggleWishlist('{{ product.id }}', this)"
               title="Add to Wishlist">
         <i class="far fa-heart"></i>
       </button>
@@ -73,7 +73,7 @@
         <i class="fas fa-eye"></i> View
       </a>
       {% if product.in_stock %}
-      <button class="btn btn-primary btn-sm" onclick="addToCart({{ product.id }}, 1, this)">
+      <button class="btn btn-primary btn-sm" onclick="addToCart('{{ product.id }}', 1, this)">
         <i class="fas fa-bag-plus"></i> Add
       </button>
       {% else %}
